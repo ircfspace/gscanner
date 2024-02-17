@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fa">
+    <head>
+        <link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="./assets/css/bootstrap-rtl.min.css" rel="stylesheet" />
+        <link href="./assets/css/vazir.css" rel="stylesheet" />
+        <link href="./assets/css/style.css?v1.15.3" rel="stylesheet" />
+        <title>IRCF | اسکنر آی‌پی جی‌کور</title>
+        <meta name="description" content="آی پی سالم و تمیز برای جی‌کور (gcore) جهت دسترسی به اینترنت آزاد" />
+        <meta name="keywords" content="جی‌کور, جیکور, gcore, gc, آی پی تمیز, آی پی سالم, اسکن آی پی" />
+        <meta name="robots" content="index,follow,noodp" />
+        <meta name="googlebot" content="index,follow" />
+        <meta name="theme-color" content="#ff7900" />
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        <meta charset="UTF-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/x-icon" href="./assets/favicon.ico?v1.1" />
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12 col-centered">
+                    <a href=".">
+                        <img src="./assets/img/cflogo.png?v1.1" alt="logo" />
+                        <h1>اینترنت برای همه؛ یا هیچ‌کس!</h1>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="clearfix"></div>
+        <div class="container">
+            <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12 col-centered">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="https://ircf.space">معرفی</a>
+                    </li>
+                    <li>
+                        <a href="https://ircf.space/list.php">لیست IP</a>
+                    </li>
+                    <li class="dropdown active">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">ابزارها <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="https://ircf.space/scanner.php">معرفی اسکنرها</a></li>
+                            <li><a href="https://ircf.space/export.php" target="_blank">خروجی نتایج اسکن</a></li>
+                            <li class="divider"></li>
+                            <li><a href="https://ircfspace.github.io/scanner/" target="_blank">اسکنر کلودفلر</a></li>
+                            <li class="active"><a href="./index.html">اسکنر جی‌کور</a></li>
+                        </ul>
+                    </li>
+                    <li class="pull-left">
+                        <a href="https://ircf.space/contacts.php">تماس‌باما</a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+                <div class="alert alert-warning" id="alert">
+                    <p>برای شروع عملیات اسکن روی اینترنت <b id="providerName"></b> باید تعداد آی‌پی و سرعت موردنظر برای هرمرتبه جستجو را مشخص نمایید. <em id="proxyChecker">علاوه‌براین، باید قندشکن شما خاموش باشد.</em></p>
+                </div>
+                <div class="clearfix"></div>
+                <select id="ranges" class="form-control dirLeft" multiple>
+                    <option value="all" selected>همه رنج‌ها</option>
+                </select>
+                <div class="input-group scanner">
+                    <input id="download-num" type="number" min="5" max="100" value="10" class="form-control dirLeft" />
+                    <span class="input-group-addon" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="دفعات تلاش برای یافتن آی‌پی با حداکثر پینگ موردنظر">
+                        <small>تلاش با حداکثر پینگ</small>
+                    </span>
+                    <input id="max-ping" type="number" min="100" max="3000" step="100" value="1000" class="form-control dirLeft" />
+                    <div class="input-group-btn">
+                        <div class="btn-group">
+                            <button id="scanBtn" onclick="startScan()" class="btn btn-info prmScan" disabled>اسکن</button>
+                            <div class="btn-group scanOpt">
+                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" id="newScan" disabled>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="javascript:;" onclick="newScan();">اسکن تازه</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="betaVersion">
+                    <input type="checkbox" id="random" value="1" checked />
+                    <label for="random">اسکن بین رنج‌ها به‌صورت رندوم</label>
+                </div>
+                <div class="hidden" id="tableResults">
+                    <div class="clearfix"></div>
+                    <hr>
+                    <div class="progress" id="progressBar">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>آی‌پی</th>
+                                <th>تاخیر</th>
+                            </tr>
+                            </thead>
+                            <tbody id="result"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="alert alert-info text-center hidden" id="process">
+                    درحال تست
+                    <span id="test-no" dir="ltr"></span>
+                    بر روی
+                    <span id="ip-no" dir="ltr"></span>
+                    <span id="ip-try"></span>
+                </div>
+                <div class="alert alert-success text-center hidden" id="download-text"></div>
+                <br>
+                <div id="donate" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">دونیت</h4>
+                            </div>
+                            <div class="modal-body modalBodyOverflow">
+                                <p>درصورت تمایل برای دونیت می‌تونین از یکی‌از روش‌های زیر استفاده کنین:</p>
+                                <div class="dirLeft">
+                                    <small>Buy me a coffee:</small>
+                                    <br>
+                                    <a href="https://buymeacoffee.com/ircf" class="btn btn-default btn-block" target="_blank">buymeacoffee.com/ircf</a>
+                                    <br>
+                                    <small>Tether (TRC20):</small>
+                                    <br>
+                                    <input type="text" class="form-control text-center" value="TF5cT8fQMuajHGGH141U9JbTygFojkrFdB" />
+                                    <br>
+                                    <small>Bitcoin:</small>
+                                    <br>
+                                    <input type="text" class="form-control text-center" value="bc1qyhx0qn9722vdvlz4s64g4sxq3yne0f5ryz3jyd" />
+                                    <br>
+                                    <small>Tron (TRX):</small>
+                                    <br>
+                                    <input type="text" class="form-control text-center" value="TF5cT8fQMuajHGGH141U9JbTygFojkrFdB" />
+                                    <br>
+                                    <small>Ethereum:</small>
+                                    <br>
+                                    <input type="text" class="form-control text-center" value="0x2A72777912A15A6387a1116f9bDDFe1Cb9474BF1" />
+									<br>
+                                    <small>Litecoin:</small>
+                                    <br>
+                                    <input type="text" class="form-control text-center" value="ltc1q5d4u366xef336pjvccn7akn02upavmk45fhtdw" />
+                                    <br>
+                                    <small>TON (ERC20):</small>
+									<br>
+									<input type="text" class="form-control text-center" value="0x2A72777912A15A6387a1116f9bDDFe1Cb9474BF1" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">حله</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <p class="text-center">
+                        © ارائه‌شده توسط
+                        <a href="https://github.com/ircfspace" target="_blank">IRCF</a>
+                    </p>
+                    <script>
+                        let siteUrl = document.location.href;
+                        window.addEventListener('load', function() {
+                            getRanges();
+                            getMyIp();
+                        });
+                    </script>
+                    <div class="text-center">
+                        <a href="#" class="btn btn-link btn-normal btn-lg btn-outline donateLink" data-toggle="modal" data-target="#donate">☕</a>
+                    </div>
+                    <script src="./assets/js/jquery.min.js?v3.6.4"></script>
+                    <script src="./assets/js/bootstrap.min.js"></script>
+                    <script src="./assets/js/script.js?v1.15.1"></script>
+                </footer>
+            </div>
+        </div>
+    </body>
+</html>
